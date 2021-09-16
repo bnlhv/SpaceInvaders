@@ -1,16 +1,21 @@
+from enum import Enum
+
 from globals import pygame, WIN_SIZE
 
 
+class FIGURES(Enum):
+    PLAYER = 0,
+    ENEMY = 1,
+    BULLET = 2
+
+
 class Figure:
-    def __init__(self,
-                 name: str,
-                 img_path: str,
-                 initial_x: int,
-                 initial_y: int):
-        self.name: str = name
+    def __init__(self, img_path: str, initial_x: int, initial_y: int, fig_kind: FIGURES, x_change: int):
+        self.fig_kind: FIGURES = fig_kind
         self.img = pygame.image.load(img_path)
-        self.x = initial_x
-        self.y = initial_y
+        self.x: int = initial_x
+        self.y: int = initial_y
+        self.x_change: int = x_change
 
     @property
     def x(self) -> int:
@@ -19,7 +24,8 @@ class Figure:
     @x.setter
     def x(self, new_x: int):
         self._x = new_x
-        self.check_x_boundaries()
+        if self.fig_kind is FIGURES.PLAYER:
+            self.check_x_boundaries()
 
     def check_x_boundaries(self) -> int:
         """
