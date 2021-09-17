@@ -1,4 +1,5 @@
 import random
+from time import sleep
 
 import pygame
 
@@ -21,7 +22,7 @@ def run_game() -> None:
         name='Player',
         img_path='Assets/player.png',
         initial_x=(WIN_SIZE[0] / 2) - (FIG_SIZE / 2),
-        initial_y=(WIN_SIZE[1] * (3 / 4)) + (FIG_SIZE / 2)
+        initial_y=WIN_SIZE[1] * (3 / 4)
     )
 
     for i in range(NUM_OF_ENEMIES):
@@ -66,7 +67,13 @@ def run_game() -> None:
         game.move_enemies()
         game.draw_all_figs()
         game.show_score()
-        game.check_collision()
+        game.check_hit()
+
+        if game.is_game_over():
+            game.show_game_over()
+            pygame.display.update()
+            sleep(5)
+            break
 
         # display always updating
         pygame.display.update()

@@ -8,11 +8,13 @@ from globals import pygame, WIN_SIZE, ICON, FIG_SIZE, WHITE
 
 
 class Game:
+    """This is Game class and responsible for managing the game"""
     def __init__(self, screen):
         self.screen = screen
         self.enemies: List[Enemy] = []
         self.bullets: List[Bullet] = []
         self.player: Figure = None
+        self.game_over: bool = False
 
     @classmethod
     def init_game(cls):
@@ -83,11 +85,38 @@ class Game:
         for fig in self.enemies:
             fig.move_enemy()
 
-    def show_score(self):
+    def show_score(self) -> None:
         score = FONT.render(f"Score: {self.player.live_score}", True, WHITE)
         self.screen.blit(score, (10, 10))
 
-    def check_collision(self) -> None:
+    def show_game_over(self) -> None:
+        score = FONT.render(f"Game Over", True, WHITE)
+        self.screen.blit(score, (WIN_SIZE[0]//2 - score.get_size()[0]//2, WIN_SIZE[1]//2 - score.get_size()[1]//2))
+
+    def is_game_over(self):
+        """This function check if invaders arrived close to player"""
+        player_rect = pygame.Rect(
+            self.player.x,
+            self.player.y,
+            self.player.img.get_size()[0],
+            self.player.img.get_size()[1]
+        )
+
+        for enemy in self.enemies:
+            enemy_rect = pygame.Rect(enemy.x, enemy.y, enemy.img.get_size()[0], enemy.img.get_size()[1])
+            # if there is a collision
+            if enemy_rect.colliderect(player_rect):
+                self.game_over = True
+                break
+
+        if self.game_over:
+            # remove all enemies from screen
+            for enemy in self.enemies:
+                self.remove_enemy(enemy)
+
+        return self.game_over
+
+    def check_hit(self) -> None:
         """
         Check collision between a bullet and an enemy,
         if True - remove enemy and bullet and update the score
@@ -96,8 +125,12 @@ class Game:
             if bullet.y <= 0:
                 self.remove_bullet(bullet)
             bullet_rect = pygame.Rect(bullet.x, bullet.y, bullet.img.get_size()[0], bullet.img.get_size()[1])
+
             for enemy in self.enemies:
                 enemy_rect = pygame.Rect(enemy.x, enemy.y, enemy.img.get_size()[0], enemy.img.get_size()[1])
+                if self.is_game_over(enemy_rect):
+                    self.game_over = True
+                    return
 
                 # check if there is a collision between these 2 rectangles
                 if enemy_rect.colliderect(bullet_rect):
