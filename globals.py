@@ -1,5 +1,3 @@
-from enum import Enum
-
 import pygame
 
 WIN_SIZE = (800, 600)
@@ -10,3 +8,4 @@ FIG_SIZE = 64
 CLOCK = pygame.time.Clock()
 FPS = 60
 BLACK = (0, 0, 0)
+NUM_OF_ENEMIES = 5

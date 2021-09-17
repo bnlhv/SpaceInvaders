@@ -10,12 +10,24 @@ class FIGURES(Enum):
 
 
 class Figure:
+    """
+    This class represents class variables that
+    is shared between all figure in the game
+    """
     def __init__(self, img_path: str, initial_x: int, initial_y: int, fig_kind: FIGURES, x_change: int):
         self.fig_kind: FIGURES = fig_kind
         self.img = pygame.image.load(img_path)
         self.x: int = initial_x
         self.y: int = initial_y
         self.x_change: int = x_change
+
+    @property
+    def x_change(self) -> int:
+        return self._x_change
+
+    @x_change.setter
+    def x_change(self, value: int) -> None:
+        self._x_change = value
 
     @property
     def x(self) -> int:

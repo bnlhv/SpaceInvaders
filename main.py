@@ -1,11 +1,11 @@
 import random
+
 import pygame
 
 from bullet import Bullet
 from enemy import Enemy
-from figure import Figure
-from game import init_game
-from globals import WIN_SIZE, FIG_SIZE, CLOCK, FPS, BLACK, BACKGROUND
+from game import Game
+from globals import WIN_SIZE, FIG_SIZE, CLOCK, FPS, BACKGROUND, NUM_OF_ENEMIES
 from player import Player
 
 
@@ -15,7 +15,7 @@ def run_game() -> None:
     :return: None
     """
 
-    game = init_game()
+    game = Game.init_game()
 
     player = Player(
         name='Player',
@@ -23,14 +23,15 @@ def run_game() -> None:
         initial_x=(WIN_SIZE[0] / 2) - (FIG_SIZE / 2),
         initial_y=(WIN_SIZE[1] * (3/4)) + (FIG_SIZE / 2)
     )
-    enemy1 = Enemy(
-        img_path='enemy.png',
-        initial_x=random.randint(0, 800 - FIG_SIZE),
-        initial_y=random.randint(50, 150)
-    )
+
+    for i in range(NUM_OF_ENEMIES):
+        game.add_enemy(Enemy(img_path='enemy.png',
+                            initial_x=random.randint(0, 800 - FIG_SIZE),
+                            initial_y=random.randint(50, 150)
+                             )
+                       )
 
     game.player = player
-    game.add_enemy(enemy1)
 
     player_x_change = 0
     enemy_x_change = 0
@@ -53,8 +54,11 @@ def run_game() -> None:
                 if e.key == pygame.K_LEFT:
                     game.player.x_change = -3
                 if e.key == pygame.K_SPACE:
-                    bullet = Bullet('bullet.png', game.player.x, game.player.y - 30)
-                    game.add_bullet(bullet)
+                    if len(game.bullets) <= 2:
+                        bullet = Bullet('bullet.png', game.player.x, game.player.y - 30)
+                        game.add_bullet(bullet)
+                    else:
+                        print("Not enough bullets, please wait")
             if e.type == pygame.KEYUP:
                 game.player.x_change = 0
 
