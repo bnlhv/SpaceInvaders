@@ -1,4 +1,4 @@
-from figure import Figure, FIGURES
+from Figures.figure import Figure, FIGURES
 
 
 class Player(Figure):

@@ -1,10 +1,10 @@
 import random
 from typing import List
 
-from bullet import Bullet
-from enemy import Enemy
-from figure import Figure
-from globals import pygame, WIN_SIZE, ICON, FIG_SIZE
+from Figures.bullet import Bullet
+from Figures.enemy import Enemy
+from Figures.figure import Figure
+from globals import pygame, WIN_SIZE, ICON, FIG_SIZE, WHITE
 
 
 class Game:
@@ -20,8 +20,16 @@ class Game:
         # Init pygame
         pygame.init()
 
+        # Init game sound
+        pygame.mixer.music.load('Assets/spaceinvaders1.mpeg')
+        pygame.mixer.music.play(-1)
+
         # Create screen
         screen = pygame.display.set_mode(WIN_SIZE)
+
+        # init fonts for app
+        global FONT
+        FONT = pygame.font.Font('freesansbold.ttf', 32)
 
         # Title and Icon(32pix)
         pygame.display.set_caption("Space Invaders")
@@ -75,6 +83,10 @@ class Game:
         for fig in self.enemies:
             fig.move_enemy()
 
+    def show_score(self):
+        score = FONT.render(f"Score: {self.player.live_score}", True, WHITE)
+        self.screen.blit(score, (10, 10))
+
     def check_collision(self) -> None:
         """
         Check collision between a bullet and an enemy,
@@ -91,9 +103,9 @@ class Game:
                 if enemy_rect.colliderect(bullet_rect):
                     self.remove_bullet(bullet)
                     self.remove_enemy(enemy)
+                    pygame.mixer.Sound('Assets/invaderkilled.wav').play()
                     self.player.live_score += 1
-                    print(f"hit! score is {self.player.live_score}")
-                    self.add_enemy(Enemy(img_path='enemy.png',
+                    self.add_enemy(Enemy(img_path='Assets/enemy.png',
                                          initial_x=random.randint(0, 800 - FIG_SIZE),
                                          initial_y=random.randint(50, 150)
                                          )

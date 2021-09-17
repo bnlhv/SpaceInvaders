@@ -1,4 +1,4 @@
-from figure import Figure, FIGURES
+from Figures.figure import Figure, FIGURES
 from globals import WIN_SIZE, FIG_SIZE
 
 

@@ -2,11 +2,11 @@ import random
 
 import pygame
 
-from bullet import Bullet
-from enemy import Enemy
+from Figures.bullet import Bullet
+from Figures.enemy import Enemy
+from Figures.player import Player
 from game import Game
 from globals import WIN_SIZE, FIG_SIZE, CLOCK, FPS, BACKGROUND, NUM_OF_ENEMIES
-from player import Player
 
 
 def run_game() -> None:
@@ -19,15 +19,15 @@ def run_game() -> None:
 
     player = Player(
         name='Player',
-        img_path='player.png',
+        img_path='Assets/player.png',
         initial_x=(WIN_SIZE[0] / 2) - (FIG_SIZE / 2),
-        initial_y=(WIN_SIZE[1] * (3/4)) + (FIG_SIZE / 2)
+        initial_y=(WIN_SIZE[1] * (3 / 4)) + (FIG_SIZE / 2)
     )
 
     for i in range(NUM_OF_ENEMIES):
-        game.add_enemy(Enemy(img_path='enemy.png',
-                            initial_x=random.randint(0, 800 - FIG_SIZE),
-                            initial_y=random.randint(50, 150)
+        game.add_enemy(Enemy(img_path='Assets/enemy.png',
+                             initial_x=random.randint(0, 800 - FIG_SIZE),
+                             initial_y=random.randint(50, 150)
                              )
                        )
 
@@ -54,11 +54,10 @@ def run_game() -> None:
                 if e.key == pygame.K_LEFT:
                     game.player.x_change = -3
                 if e.key == pygame.K_SPACE:
-                    if len(game.bullets) <= 2:
-                        bullet = Bullet('bullet.png', game.player.x, game.player.y - 30)
-                        game.add_bullet(bullet)
-                    else:
-                        print("Not enough bullets, please wait")
+                    if len(game.bullets) <= 1:
+                        bullet = Bullet('Assets/bullet.png', game.player.x, game.player.y - 30)
+                        game.bullets.append(bullet)
+                        pygame.mixer.Sound('Assets/shoot.wav').play()
             if e.type == pygame.KEYUP:
                 game.player.x_change = 0
 
@@ -66,6 +65,7 @@ def run_game() -> None:
         # update enemies place with boundary check and draw them
         game.move_enemies()
         game.draw_all_figs()
+        game.show_score()
         game.check_collision()
 
         # display always updating
