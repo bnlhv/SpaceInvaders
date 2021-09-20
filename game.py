@@ -1,43 +1,72 @@
+import os
 import random
 from typing import List
 
 from Figures.bullet import Bullet
 from Figures.enemy import Enemy
 from Figures.figure import Figure
-from globals import pygame, WIN_SIZE, ICON, FIG_SIZE, WHITE
+from globals import pygame, WIN_SIZE, ICON, FIG_SIZE, WHITE, BLACK, FONT_NAME
 
 
 class Game:
     """This is Game class and responsible for managing the game"""
-    def __init__(self, screen):
-        self.screen = screen
-        self.enemies: List[Enemy] = []
-        self.bullets: List[Bullet] = []
-        self.player: Figure = None
+    def __init__(self):
+        pygame.init()
+        self.running = True
+        self.playing = False
+        self.display_width = 800
+        self.display_height = 600
+        self.display = pygame.surface((self.display_width, self.display_height))
+        self.window = pygame.display.set_mode((self.display_width, self.display_height))
+        self.font_name = '/Assets/goblin_font.otf'
         self.game_over: bool = False
 
-    @classmethod
-    def init_game(cls):
-        """This is the init game function"""
-        # Init pygame
-        pygame.init()
-
-        # Init game sound
+    def game_loop(self):
         pygame.mixer.music.load('Assets/spaceinvaders1.mpeg')
         pygame.mixer.music.play(-1)
 
-        # Create screen
-        screen = pygame.display.set_mode(WIN_SIZE)
-
-        # init fonts for app
-        global FONT
-        FONT = pygame.font.Font('freesansbold.ttf', 32)
-
-        # Title and Icon(32pix)
         pygame.display.set_caption("Space Invaders")
         pygame.display.set_icon(ICON)
 
-        return cls(screen)
+        while self.playing:
+            self.check_events()
+            if self.START_KEY:
+                self.playing = False
+            self.display.fill(BLACK)
+            self.draw_text('Thanks for playing', 28, self.display_width / 2, self.display_height / 2)
+            self.window.blit(self.display, (0, 0))
+            pygame.display.update()
+            self.reset_keys()
+
+    def check_events(self) -> None:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.running, self.playing = False, False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    self.START_KEY = True
+                if event.key == pygame.K_BACKSPACE:
+                    self.BACK_KEY = True
+                if event.key == pygame.K_DOWN:
+                    self.DOWN_KEY = True
+                if event.key == pygame.K_UP:
+                    self.UP_KEY = True
+                if event.key == pygame.K_LEFT:
+                    self.LEFT_KEY = True
+                if event.key == pygame.K_RIGHT:
+                    self.RIGHT_KEY = True
+
+    def reset_keys(self) -> None:
+        self.START_KEY, self.BACK_KEY, self.LEFT_KEY, self.RIGHT_KEY, self.UP_KEY, self.DOWN_KEY = False, False, False,\
+                                                                                                   False, False, False
+
+    def draw_text(self, text, size, x, y):
+        font = pygame.font.Font(FONT_NAME, size)
+        surface = font.render(text, True, WHITE)
+        text_rect = surface.get_rect()
+        text_rect.center = (x, y)
+        self.display.blit(BLACK)
+
 
     @property
     def player(self) -> Figure:
@@ -86,7 +115,7 @@ class Game:
             fig.move_enemy()
 
     def show_score(self) -> None:
-        score = FONT.render(f"Score: {self.player.live_score}", True, WHITE)
+        score = self.font.render(f"Score: {self.player.live_score}", True, WHITE)
         self.screen.blit(score, (10, 10))
 
     def show_game_over(self) -> None:
@@ -128,7 +157,7 @@ class Game:
 
             for enemy in self.enemies:
                 enemy_rect = pygame.Rect(enemy.x, enemy.y, enemy.img.get_size()[0], enemy.img.get_size()[1])
-                if self.is_game_over(enemy_rect):
+                if self.is_game_over():
                     self.game_over = True
                     return
 

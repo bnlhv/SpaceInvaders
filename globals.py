@@ -7,10 +7,8 @@ ICON = pygame.image.load("Assets/icon.png")
 BACKGROUND = pygame.transform.scale(pygame.image.load("Assets/space_background.jpg"), WIN_SIZE)
 
 FIG_SIZE = 64
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-FONT = None
-
+FONT_NAME = '/Assets/goblin_font.otf'
+BLACK, WHITE = (0, 0, 0), (255, 255, 255)
 CLOCK = pygame.time.Clock()
 FPS = 60
 
